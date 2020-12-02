@@ -1,5 +1,3 @@
-'use strict';
-
 let state = 'title';
 let cnv;
 let points = 0;
@@ -7,23 +5,63 @@ let w = 600;
 let h = 600;
 let player;
 let coins = [];
-let playerImg;
-let coinImg;
+let enemies = [];
+let behindimage;
 
-function preload(){
-  playerImg = loadImage('assets/Basketsmall.png');
-  coinImg = loadImage('assets/Applesmall.png');
+
+
+//spritesheets and animations
+let playerSS;
+let playerJSON;
+let playerAnimation = [];
+let coinImg;
+let enemyImg;
+
+
+
+
+
+function preload() {
+  //still images
+  //poplayerImg = loadImage('assets/Basketsmall.png');
+  //coinImg = loadImage('assets/Applesmall.png');
+
+  //spritesheets
+  playerSS = loadImage('assets/Basketspritesheet.png');
+  playerJSON = loadJSON('assets/Basketspritesheet.json');
+  behindimage = loadImage('assets/treesbackground.png');
+  coinImg = loadImage('assets/AppleStill.png');
+  enemyImg = loadImage('assets/BombStill.png');
+
 }
 
 function setup() {
   cnv = createCanvas(w, h);
+  frameRate(12);
+
+
+  imageMode(CENTER);
+  rectMode(CENTER);
 
   textFont('monospace');
+
+  //console.log(playerJSON.frames[0].frame);
+
+  let playerFrames = playerJSON.frames;
+
+  for (let i = 0; i < playerFrames.length; i++) {
+    let pos = playerFrames[i].frame;
+    let img = playerSS.get(pos.x, pos.y, pos.w, pos.h);
+    playerAnimation.push(img);
+    console.log(playerAnimation);
+  }
 
   player = new Player();
 
   // coins[0] = new Coin();
   coins.push(new Coin());
+  // enemy[0] = new Enemy();
+  enemies.push(new Enemy());
 
 }
 
@@ -83,8 +121,12 @@ function level1() {
   background(9, 82, 10);
   //text('Click for points', w/2, h - 30);
 
-  if (random(1) <= 0.01) {
+  if (random(1) <= 0.06) {
     coins.push(new Coin());
+  }
+
+  if (random(1) <= 0.07) {
+    enemies.push(new Enemy());
   }
 
   player.display();
@@ -92,13 +134,17 @@ function level1() {
 
 
   //iterating through coins array to display and move them
-
   //using for loop
   for (let i = 0; i < coins.length; i++) {
     coins[i].display();
     coins[i].move();
   }
 
+  //iterating through enemies array to display and move them
+  for (let i = 0; i < enemies.length; i++) {
+    enemies[i].display();
+    enemies[i].move();
+  }
   // //using forEach
   // coins.forEach(function(coin){
   //   coin.display();
@@ -111,21 +157,34 @@ function level1() {
   //   coin.move();
   // }
 
-  //check for collision, if there is a collision increase points by 1 and splice that coin out of array
 
+  //check for collision with coins, if there is a collision increase points by 1 and splice that coin out of array
   //need to iterate backwards through array
   for (let i = coins.length - 1; i >= 0; i--) {
     if (dist(player.x, player.y, coins[i].x, coins[i].y) <= (player.r + coins[i].r) / 2) {
       points++;
       console.log(points);
       coins.splice(i, 1);
-    } else if (coins[i].y > h){
-      coins.splice(i,1);
+    } else if (coins[i].y > h) {
+      coins.splice(i, 1);
       console.log('coin is out of town');
     }
   }
 
   text(`points: ${points}`, w / 4, h - 30);
+
+  //check for collision with enemies, if there is a collision increase points by 1 and splice that enemies out of array
+  //need to iterate backwards through array this is for enemies
+  for (let i = enemies.length - 1; i >= 0; i--) {
+    if (dist(player.x, player.y, enemies[i].x, enemies[i].y) <= (player.r + enemies[i].r) / 2) {
+      points--;
+      console.log(points);
+      enemies.splice(i, 1);
+    } else if (enemies[i].y > h) {
+      enemies.splice(i, 1);
+      console.log('enemy is out of town');
+    }
+  }
 
 }
 
