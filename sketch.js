@@ -3,7 +3,7 @@ let cnv;
 let points = 0;
 let w = 600;
 let h = 600;
-let player;
+let player = 1;
 let coins = [];
 let enemies = [];
 let behindimage;
@@ -76,9 +76,13 @@ function draw() {
       level1();
       cnv.mouseClicked(level1MouseClicked);
       break;
-    case 'YOU WIN':
+    case 'you win':
       youWin();
       cnv.mouseClicked(youWinMouseClicked);
+      break;
+    case 'game over':
+      gameOver();
+      cnv.mouseClicked(gameOverMouseClicked);
       break;
     default:
       break;
@@ -171,7 +175,7 @@ function level1() {
     }
   }
 
-  text(`points: ${points}`, w / 4, h - 30);
+
 
   //check for collision with enemies, if there is a collision increase points by 1 and splice that enemies out of array
   //need to iterate backwards through array this is for enemies
@@ -185,6 +189,16 @@ function level1() {
       console.log('enemy is out of town');
     }
   }
+
+  text(`points: ${points}`, w / 4, h - 30);
+
+  //check point values to win or loose the game
+  if (points >= 10) {
+    state = 'you win';
+  } else if (points <= -1){
+    state = 'game over';
+  }
+
 
 }
 
@@ -208,6 +222,21 @@ function youWin() {
 }
 
 function youWinMouseClicked() {
-  state = 'level 1'
+  state = 'title';
+  points = 0;
+}
+
+function gameOver() {
+  background(255, 212, 23);
+  textSize(80);
+  stroke(255);
+  text('Game Over', w / 2, h / 2);
+
+  textSize(30);
+  text('Click Anywhere To ReStart!', w / 2, h * 3 / 4);
+}
+
+function gameOverMouseClicked() {
+  state = 'title';
   points = 0;
 }
