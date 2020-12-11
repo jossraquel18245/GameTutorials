@@ -1,6 +1,7 @@
 let state = 'title';
 let cnv;
 let points = 0;
+let lives = 3;
 let w = 600;
 let h = 600;
 let player = 1;
@@ -106,7 +107,7 @@ function keyPressed() {
 }
 
 function title() {
-  background(8, 163, 150);
+  background(138, 171, 96);
   textSize(75);
   fill(255);
   textAlign(CENTER);
@@ -122,7 +123,8 @@ function titleMouseClicked() {
 }
 
 function level1() {
-  background(9, 82, 10);
+  background(9, 82, 30);
+  image(behindimage, w / 2, h / 2, w, h);
   //text('Click for points', w/2, h - 30);
 
   if (random(1) <= 0.06) {
@@ -195,7 +197,7 @@ function level1() {
   //check point values to win or loose the game
   if (points >= 10) {
     state = 'you win';
-  } else if (points <= -1){
+  } else if (points <= -1) {
     state = 'game over';
   }
 
@@ -227,16 +229,34 @@ function youWinMouseClicked() {
 }
 
 function gameOver() {
-  background(255, 212, 23);
+  background(186, 0, 0);
   textSize(80);
-  stroke(255);
-  text('Game Over', w / 2, h / 2);
 
-  textSize(30);
-  text('Click Anywhere To ReStart!', w / 2, h * 3 / 4);
+  //check # of lives
+  if (lives >= 0) {
+
+    //displays number of lives left on the screen
+    text(`lives left: ${lives}`, w / 2, h / 2);
+
+    textSize(30);
+    text('click anywhere to play again', w / 2, h * 3 / 4);
+  } else {
+    //Game really over
+    text('Game Over', w / 2, h / 2);
+
+    textSize(30);
+    text('Click Anywhere To ReStart!', w / 2, h * 3 / 4);
+  }
+
+
 }
 
 function gameOverMouseClicked() {
-  state = 'title';
+  if (lives >= 0) { //this means they have 0 lives going into it
+    lives--; //if you have a life, you lose one!
+    state = 'level 1';
+  } else {
+    state = 'title';
+  }
   points = 0;
 }
